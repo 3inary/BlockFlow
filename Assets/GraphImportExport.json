@@ -1,0 +1,158 @@
+{
+    "startBlockId": "1",
+    "blocks": [
+        {
+            "id": "1",
+            "type": 0,
+            "shapeType": 0,
+            "nextBlockId": "2",
+            "trueBlockId": "",
+            "falseBlockId": "",
+            "objectId": "cube1",
+            "variableName": "",
+            "floatValue": 0.0,
+            "vectorValue": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "comparisonOperator": 0
+        },
+        {
+            "id": "2",
+            "type": 1,
+            "shapeType": 0,
+            "nextBlockId": "3",
+            "trueBlockId": "",
+            "falseBlockId": "",
+            "objectId": "cube1",
+            "variableName": "",
+            "floatValue": 0.0,
+            "vectorValue": {
+                "x": 2.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "comparisonOperator": 0
+        },
+        {
+            "id": "3",
+            "type": 2,
+            "shapeType": 0,
+            "nextBlockId": "4",
+            "trueBlockId": "",
+            "falseBlockId": "",
+            "objectId": "cube1",
+            "variableName": "",
+            "floatValue": 0.0,
+            "vectorValue": {
+                "x": 0.0,
+                "y": 45.0,
+                "z": 0.0
+            },
+            "comparisonOperator": 0
+        },
+        {
+            "id": "4",
+            "type": 3,
+            "shapeType": 0,
+            "nextBlockId": "5",
+            "trueBlockId": "",
+            "falseBlockId": "",
+            "objectId": "cube1",
+            "variableName": "",
+            "floatValue": 0.0,
+            "vectorValue": {
+                "x": 2.0,
+                "y": 2.0,
+                "z": 2.0
+            },
+            "comparisonOperator": 0
+        },
+        {
+            "id": "5",
+            "type": 4,
+            "shapeType": 0,
+            "nextBlockId": "6",
+            "trueBlockId": "",
+            "falseBlockId": "",
+            "objectId": "",
+            "variableName": "counter",
+            "floatValue": 5.0,
+            "vectorValue": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "comparisonOperator": 0
+        },
+        {
+            "id": "6",
+            "type": 6,
+            "shapeType": 0,
+            "nextBlockId": "7",
+            "trueBlockId": "",
+            "falseBlockId": "",
+            "objectId": "",
+            "variableName": "counter",
+            "floatValue": 3.0,
+            "vectorValue": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "comparisonOperator": 0
+        },
+        {
+            "id": "7",
+            "type": 7,
+            "shapeType": 0,
+            "nextBlockId": "",
+            "trueBlockId": "8",
+            "falseBlockId": "9",
+            "objectId": "",
+            "variableName": "",
+            "floatValue": 0.0,
+            "vectorValue": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "comparisonOperator": 0
+        },
+        {
+            "id": "8",
+            "type": 0,
+            "shapeType": 1,
+            "nextBlockId": "",
+            "trueBlockId": "",
+            "falseBlockId": "",
+            "objectId": "sphere1",
+            "variableName": "",
+            "floatValue": 0.0,
+            "vectorValue": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 3.0
+            },
+            "comparisonOperator": 0
+        },
+        {
+            "id": "9",
+            "type": 0,
+            "shapeType": 2,
+            "nextBlockId": "",
+            "trueBlockId": "",
+            "falseBlockId": "",
+            "objectId": "cylinder1",
+            "variableName": "",
+            "floatValue": 0.0,
+            "vectorValue": {
+                "x": -2.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "comparisonOperator": 0
+        }
+    ]
+}

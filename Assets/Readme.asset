@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcf7219bab7fe46a1ad266029b2fee19, type: 3}
+  m_Name: Readme
+  m_EditorClassIdentifier: 
+  commonStyle: {fileID: 7433441132597879392, guid: d2c670ece470f4c4fa6712b8dc28a9bb, type: 3}
+  darkStyle: {fileID: 7433441132597879392, guid: 1f902e57f049a7f47986618de93f5ee1, type: 3}
+  lightStyle: {fileID: 7433441132597879392, guid: 69e7ab73923f93149821ac3a88b84856, type: 3}
+  title: Block Flow
+  sections:
+  - heading: Overview
+    text: Block Flow is a small data-driven block execution system built in Unity 6000.3.2f1. It was designed to demonstrate spawning and manipulating primitives through functional blocks, simple logical flow with variables, comparisons and branching, and JSON-based export/import of the full block configuration.
+    linkText: 
+    url:
+  - heading: Implemented Features
+    text: 'Blocks included: Spawn, Move, Rotate, Scale, SetValue, AddValue, Compare, Branch. Supported primitives: Cube, Sphere, Cylinder. The system validates graph structure before execution and stores the full graph as JSON for export and import.'
+    linkText: 
+    url:
+  - heading: Architecture
+    text: 'GraphData contains the serializable graph definition. BlockData represents individual configured blocks. GraphExecutor interprets the graph at runtime. ExecutionContext stores spawned objects and variables during execution. GraphValidator checks references and required fields before execution. GraphController provides Unity-facing orchestration, while GraphControllerEditor exposes simple inspector actions for creating, validating, executing, importing and exporting graphs.'
+    linkText: 
+    url:
+  - heading: Usage
+    text: Add the GraphController component to a GameObject, use the inspector actions to create or import a graph, validate it, then execute it. The graph can also be exported to JSON and loaded again later.
+    linkText: 
+    url:
+  - heading: Author
+    text: René Marcel Welland
+    linkText: 
+    url:
+  loadedLayout: 1
