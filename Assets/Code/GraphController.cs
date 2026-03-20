@@ -11,7 +11,7 @@ public class GraphController : MonoBehaviour
     public GraphData graphData = new();
     
     [Header("Optional file name")]
-    public string fileName = "graph_export.json";
+    public string fileName = "GraphImportExport.json";
     
     public void CreateExampleGraph()
     {

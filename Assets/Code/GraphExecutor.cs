@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Executes a graph of blocks defined in GraphData, following the flow from startBlockId to subsequent blocks.
+/// Executes a graph of blocks defined in GraphData.
 /// </summary>
 public class GraphExecutor
 {
@@ -21,18 +21,11 @@ public class GraphExecutor
         }
 
         context = new ExecutionContext();
-        blockMap = graph.blocks.ToDictionary(b => b.id, b => b);
+        blockMap = graph.blocks.ToDictionary(block => block.id, block => block);
 
         string currentBlockId = graph.startBlockId;
-        int safetyCounter = 0;
-        const int maxSteps = 1000;
 
         while (!string.IsNullOrEmpty(currentBlockId)) {
-            safetyCounter++;
-            if (safetyCounter > maxSteps) {
-                Debug.LogError("Execution aborted: too many steps. Possible infinite loop.");
-                return false;
-            }
 
             if (!blockMap.TryGetValue(currentBlockId, out BlockData block)) {
                 Debug.LogError($"Block not found: {currentBlockId}");
@@ -81,41 +74,39 @@ public class GraphExecutor
 
     private string ExecuteSpawn(BlockData block)
     {
-        PrimitiveType primitiveType = PrimitiveType.Cube;
+        PrimitiveType primitiveType = block.shapeType switch
+        {
+            ShapeType.Cube => PrimitiveType.Cube,
+            ShapeType.Sphere => PrimitiveType.Sphere,
+            ShapeType.Cylinder => PrimitiveType.Cylinder,
+            _ => PrimitiveType.Cube
+        };
 
-        switch (block.shapeType) {
-            case ShapeType.Cube:
-                primitiveType = PrimitiveType.Cube;
-                break;
-            case ShapeType.Sphere:
-                primitiveType = PrimitiveType.Sphere;
-                break;
-            case ShapeType.Cylinder:
-                primitiveType = PrimitiveType.Cylinder;
-                break;
-            default:
-                Debug.LogWarning($"Unknown shapeType '{block.shapeType}', defaulting to Cube.");
-                break;
+        string objectId = string.IsNullOrWhiteSpace(block.objectId)
+            ? $"Spawned_{block.id}"
+            : block.objectId;
+
+        GameObject gameObject = GameObject.CreatePrimitive(primitiveType);
+        gameObject.name = objectId;
+
+        if (block.vectorValue != null) {
+            gameObject.transform.position = block.vectorValue.ToVector3();
         }
 
-        GameObject go = GameObject.CreatePrimitive(primitiveType);
-        go.name = string.IsNullOrEmpty(block.objectId) ? $"Spawned_{block.id}" : block.objectId;
+        context.Objects[objectId] = gameObject;
 
-        if (block.vectorValue != null)
-            go.transform.position = block.vectorValue.ToVector3();
-
-        string objectKey = string.IsNullOrEmpty(block.objectId) ? go.name : block.objectId;
-        context.objects[objectKey] = go;
-
-        Debug.Log($"Spawned {block.shapeType} as '{objectKey}'.");
+        Debug.Log($"Spawned {block.shapeType} as '{objectId}'.");
         return block.nextBlockId;
     }
 
     private string ExecuteMove(BlockData block)
     {
-        if (TryGetObject(block.objectId, out GameObject go)) {
-            go.transform.position = block.vectorValue != null ? block.vectorValue.ToVector3() : Vector3.zero;
-            Debug.Log($"Moved '{block.objectId}' to {go.transform.position}.");
+        if (TryGetObject(block.objectId, out GameObject gameObject)) {
+            gameObject.transform.position = block.vectorValue != null
+                ? block.vectorValue.ToVector3()
+                : Vector3.zero;
+
+            Debug.Log($"Moved '{block.objectId}' to {gameObject.transform.position}.");
         }
 
         return block.nextBlockId;
@@ -123,9 +114,12 @@ public class GraphExecutor
 
     private string ExecuteRotate(BlockData block)
     {
-        if (TryGetObject(block.objectId, out GameObject go)) {
-            Vector3 rotation = block.vectorValue != null ? block.vectorValue.ToVector3() : Vector3.zero;
-            go.transform.rotation = Quaternion.Euler(rotation);
+        if (TryGetObject(block.objectId, out GameObject gameObject)) {
+            Vector3 rotation = block.vectorValue != null
+                ? block.vectorValue.ToVector3()
+                : Vector3.zero;
+
+            gameObject.transform.rotation = Quaternion.Euler(rotation);
             Debug.Log($"Rotated '{block.objectId}' to {rotation}.");
         }
 
@@ -134,9 +128,12 @@ public class GraphExecutor
 
     private string ExecuteScale(BlockData block)
     {
-        if (TryGetObject(block.objectId, out GameObject go)) {
-            go.transform.localScale = block.vectorValue != null ? block.vectorValue.ToVector3() : Vector3.one;
-            Debug.Log($"Scaled '{block.objectId}' to {go.transform.localScale}.");
+        if (TryGetObject(block.objectId, out GameObject gameObject)) {
+            gameObject.transform.localScale = block.vectorValue != null
+                ? block.vectorValue.ToVector3()
+                : Vector3.one;
+
+            Debug.Log($"Scaled '{block.objectId}' to {gameObject.transform.localScale}.");
         }
 
         return block.nextBlockId;
@@ -144,12 +141,12 @@ public class GraphExecutor
 
     private string ExecuteSetValue(BlockData block)
     {
-        if (string.IsNullOrEmpty(block.variableName)) {
+        if (string.IsNullOrWhiteSpace(block.variableName)) {
             Debug.LogWarning("SetValue block has no variableName.");
             return block.nextBlockId;
         }
 
-        context.floatVariables[block.variableName] = block.floatValue;
+        context.FloatVariables[block.variableName] = block.floatValue;
         Debug.Log($"Set variable '{block.variableName}' = {block.floatValue}.");
 
         return block.nextBlockId;
@@ -157,34 +154,39 @@ public class GraphExecutor
 
     private string ExecuteAddValue(BlockData block)
     {
-        if (string.IsNullOrEmpty(block.variableName)) {
+        if (string.IsNullOrWhiteSpace(block.variableName)) {
             Debug.LogWarning("AddValue block has no variableName.");
             return block.nextBlockId;
         }
 
-        if (!context.floatVariables.ContainsKey(block.variableName))
-            context.floatVariables[block.variableName] = 0f;
+        if (!context.FloatVariables.ContainsKey(block.variableName)) {
+            context.FloatVariables[block.variableName] = 0f;
+        }
 
-        context.floatVariables[block.variableName] += block.floatValue;
+        context.FloatVariables[block.variableName] += block.floatValue;
 
-        Debug.Log($"Added {block.floatValue} to '{block.variableName}'. New value: {context.floatVariables[block.variableName]}");
+        Debug.Log(
+            $"Added {block.floatValue} to '{block.variableName}'. New value: {context.FloatVariables[block.variableName]}"
+        );
+
         return block.nextBlockId;
     }
 
     private string ExecuteCompare(BlockData block)
     {
-        if (string.IsNullOrEmpty(block.variableName)) {
+        if (string.IsNullOrWhiteSpace(block.variableName)) {
             Debug.LogWarning("Compare block has no variableName.");
-            context.lastComparisonResult = false;
+            context.LastComparisonResult = false;
             return block.nextBlockId;
         }
 
-        if (!context.floatVariables.TryGetValue(block.variableName, out float currentValue)) {
+        if (!context.FloatVariables.TryGetValue(block.variableName, out float currentValue)) {
             Debug.LogWarning($"Variable '{block.variableName}' not found. Using 0.");
             currentValue = 0f;
         }
 
-        context.lastComparisonResult = block.comparisonOperator switch {
+        context.LastComparisonResult = block.comparisonOperator switch
+        {
             ComparisonOperator.Greater => currentValue > block.floatValue,
             ComparisonOperator.Less => currentValue < block.floatValue,
             ComparisonOperator.GreaterOrEqual => currentValue >= block.floatValue,
@@ -194,26 +196,32 @@ public class GraphExecutor
             _ => false
         };
 
-        Debug.Log($"Compare: {block.variableName} ({currentValue}) {block.comparisonOperator} {block.floatValue} => {context.lastComparisonResult}");
+        Debug.Log(
+            $"Compare: {block.variableName} ({currentValue}) {block.comparisonOperator} {block.floatValue} => {context.LastComparisonResult}"
+        );
+
         return block.nextBlockId;
     }
 
     private string ExecuteBranch(BlockData block)
     {
-        string next = context.lastComparisonResult ? block.trueBlockId : block.falseBlockId;
-        Debug.Log($"Branch result: {context.lastComparisonResult} -> Next block: {next}");
-        return next;
+        string nextBlockId = context.LastComparisonResult
+            ? block.trueBlockId
+            : block.falseBlockId;
+
+        Debug.Log($"Branch result: {context.LastComparisonResult} -> Next block: {nextBlockId}");
+        return nextBlockId;
     }
 
-    private bool TryGetObject(string objectId, out GameObject go)
+    private bool TryGetObject(string objectId, out GameObject gameObject)
     {
-        if (string.IsNullOrEmpty(objectId)) {
+        if (string.IsNullOrWhiteSpace(objectId)) {
             Debug.LogWarning("Block has no objectId.");
-            go = null;
+            gameObject = null;
             return false;
         }
 
-        if (!context.objects.TryGetValue(objectId, out go)) {
+        if (!context.Objects.TryGetValue(objectId, out gameObject)) {
             Debug.LogWarning($"Object not found: {objectId}");
             return false;
         }

@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class ExecutionContext
 {
-    public readonly Dictionary<string, GameObject> objects = new();
-    public readonly Dictionary<string, float> floatVariables = new();
-    public bool lastComparisonResult = false;
+    public Dictionary<string, GameObject> Objects { get; } = new();
+    public Dictionary<string, float> FloatVariables { get; } = new();
+    public bool LastComparisonResult { get; set; }
 }
